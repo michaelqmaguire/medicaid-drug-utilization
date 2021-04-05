@@ -26,9 +26,9 @@ library(tidylog)
 - **01_create-directories.R** 
  - Creates standardized set of directories used across projects.
    - /data: contains subdirectories for the following
-    - /data/raw: raw data pulled directly from website or supervisor recommendations. *These files are not available on GitHub due to space consideration.*
-    - /data/clean: final datasets containing aggregated information. *These files are not available on GitHub due to space consideration.*
-    - /data/metadata-archive: contains files archiving when HHS updates or creates new datasets. 
+     - /data/raw: raw data pulled directly from website or supervisor recommendations. *These files are not available on GitHub due to space consideration.*
+     - /data/clean: final datasets containing aggregated information. *These files are not available on GitHub due to space consideration.*
+     - /data/metadata-archive: contains files archiving when HHS updates or creates new datasets. 
    - /functions: directory containing functions used in scripts.
    - /output: directory containing output, usually in the form of reports.
    - /plots: directory containing plots visualizing general relationships in the dataset.
