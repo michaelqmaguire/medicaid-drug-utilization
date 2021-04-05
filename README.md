@@ -22,9 +22,15 @@ library(rvest)
 library(stringr)
 library(tidylog)
 ```
-2. Scripts are ordered sequentially.
+2. Scripts are ordered sequentially. *These folders are visible only if they (1) are not in the .gitignore file and (2) contain any files.*
 - **01_create-directories.R** 
  - Creates standardized set of directories used across projects.
-   - testsss
+   - /data: contains subdirectories for the following:
+    - /data/raw: raw data pulled directly from website or supervisor recommendations. *These files are not available on GitHub due to space consideration.*
+    - /data/clean: final datasets containing aggregated information. *These files are not available on GitHub due to space consideration.*
+    - /data/metadata-archive: contains files archiving when HHS updates or creates new datasets. 
+   - /functions: directory containing functions used in scripts.
+   - /output: directory containing output, usually in the form of reports.
+   - /plots: directory containing plots visualizing general relationships in the dataset.
 - **02_create-examine-date-metadata.R**: 
  - Pulls created date and updated date from each dataset's webpage. This picks up on whether a fresh extract needs to be pulled.
