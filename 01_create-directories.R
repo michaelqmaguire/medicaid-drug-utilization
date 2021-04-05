@@ -7,6 +7,10 @@
 # SUPERVISORS: AMIE GOODIN, PHD, MPP | JUAN HINCAPIE-CASTILLO, PHARMD, PHD, MS                                    #
 # SCRIPT: 01_create-directories.R                                                                          			  #
 #                                                                                                                 #
+# Notes:                                                                                                          #
+# This script creates directories from the top-level directory.                                                   #
+# It assumes that the user creates a new project in R studio.                                                     #
+# If downloaded from GitHub, this does not need to be run.                                                        #
 #-----------------------------------------------------------------------------------------------------------------#
 
 ## Create data directory if it doesn't exist.
