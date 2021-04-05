@@ -25,7 +25,7 @@ library(tidylog)
 2. Scripts are ordered sequentially. *These folders are visible only if they (1) are not in the .gitignore file and (2) contain any files.*
 - **01_create-directories.R** 
  - Creates standardized set of directories used across projects.
-   - /data: contains subdirectories for the following:
+   - /data: contains subdirectories for the following
     - /data/raw: raw data pulled directly from website or supervisor recommendations. *These files are not available on GitHub due to space consideration.*
     - /data/clean: final datasets containing aggregated information. *These files are not available on GitHub due to space consideration.*
     - /data/metadata-archive: contains files archiving when HHS updates or creates new datasets. 
