@@ -25,6 +25,6 @@ library(tidylog)
 2. Scripts are ordered sequentially.
 - **01_create-directories.R** 
  - Creates standardized set of directories used across projects.
-  - test
+  - testsss
 - **02_create-examine-date-metadata.R**: 
  - Pulls created date and updated date from each dataset's webpage. This picks up on whether a fresh extract needs to be pulled.
