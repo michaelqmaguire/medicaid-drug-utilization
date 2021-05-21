@@ -41,3 +41,20 @@ vignettes/*.pdf
 # SAS files.
 
 *.sas7bdat
+
+# .csv files containing too much info.
+
+data/raw
+data/clean/redbook2019.csv
+data/clean/01_sdud-redbook-joined-on-ndc.csv
+data/clean/02_sdud-redbook-dropped-records.csv
+data/clean/03_sdud-redbook-final.csv
+
+# Scratch script
+
+99_scratch-script.R
+
+# Prior Extracts
+
+data/clean/*.zip
+
