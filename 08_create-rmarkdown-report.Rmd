@@ -1,5 +1,5 @@
 ---
-title: "State Drug Utilization, 2000 - 2020"
+title: "Medicaid State Drug Utilization, 2000 - 2020"
 author: 
   - Michael Quinn Maguire, MS ^[University of Florida, College of Pharmacy, Pharmaceutical Outcomes and Policy, michaelqmaguire2@cop.ufl.edu] 
   - Amie Goodin, PhD, MPP ^[University of Florida, College of Pharmacy, Pharmaceutical Outcomes and Policy, amie.goodin@cop.ufl.edu] 
