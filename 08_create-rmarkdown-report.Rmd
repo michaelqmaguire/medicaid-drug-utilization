@@ -1,0 +1,509 @@
+---
+title: "State Drug Utilization, 2000 - 2020"
+author: 
+  - Michael Quinn Maguire, MS ^[University of Florida, College of Pharmacy, Pharmaceutical Outcomes and Policy, michaelqmaguire2@cop.ufl.edu] 
+  - Amie Goodin, PhD, MPP ^[University of Florida, College of Pharmacy, Pharmaceutical Outcomes and Policy, amie.goodin@cop.ufl.edu] 
+  - Juan Hincapie-Castillo, PharmD, PhD, MS ^[University of Florida, College of Pharmacy, Pharmaceutical Outcomes and Policy, j.hincapie@cop.ufl.edu]
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview
+
+The following document provides a glimpse into the compiled drug utilization datasets from [Centers for Medicare & Medicaid Services](https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html).
+
+New data extracts are pulled whenever the script 02_create-examine-date-metadata.R detects that there are differences between the previously extracted metadata and the current metadata on the website.
+
+Data were compiled from the "full" datasets available in the dropdown menu. Overall national totals denoted with a state field of "XX" were removed after compiling the datasets into a single object.
+
+Data were then matched to [IBM's Micromedex Red Book](https://www.ibm.com/products/micromedex-red-book) by the NDC code.
+
+These plots show that there are some inconsistencies and data reporting issues for certain years. Please be cognizant of these issues when conducting your analyses or submitting your requests.
+
+I produce more specialized plots when a request is made. If you think there is another type of plot that would be useful for this report, please contact me via email.
+
+Please refer to the code in other areas of my [GitHub Repository](https://github.com/michaelqmaguire/medicaid-drug-utilization) for more specific information on how cleaning was performed. If you have any questions, please feel free to contact me at <michaelqmaguire2@cop.ufl.edu>.
+
+Datasets are not publicly available due to size considerations. They can be made available upon request and discussion with my supervisors.
+
+Datasets were imported and cleaned using R software. This report was written and compiled using RMarkdown. More information about RMarkdown can be located [here](https://rmarkdown.rstudio.com/).
+
+### Setup
+
+#### Loading libraries used to plot information
+
+```{r libload, warning = FALSE, message = FALSE}
+library(data.table)
+library(hrbrthemes)
+library(tidyverse)
+library(tidylog)
+```
+
+#### Reading in the final dataset
+
+```{r sdudload, include = TRUE}
+sdudFinal <-
+  fread(
+    "./data/clean/03_sdud-redbook-final.csv",
+    colClasses = c("proper_ndc" = "character")
+  )
+
+sdudFinal
+```
+
+### Creating aggregate files
+
+#### Examine total row counts and summed number of prescriptions for entire dataset.
+
+```{r sdudFinalAgg}
+sdudFinal[
+  i = ,
+  j = .(
+    RowCount = .N,
+    TotalRx = sum(numberrx)
+  )
+]
+```
+
+#### Examine total row counts and summed number of prescriptions by year.
+
+```{r sdudAggYear}
+sdudAggYear <- 
+  sdudFinal[
+    i  = ,
+    j  = .(
+      RowCount = .N,
+      TotalRx  = sum(numberrx, na.rm = TRUE),
+      FakeDate = lubridate::ymd(year, truncated = 2L)
+    ),
+    by = year
+  ][order(year)]
+
+sdudAggYear
+```
+
+#### Examine total row counts and summed number of prescriptions by year and quarter.
+
+```{r sdudAggQtrYear}
+sdudAggQtrYear <- 
+  sdudFinal[
+    i  = ,
+    j  = .(
+      RowCount = .N,
+      TotalRx  = sum(numberrx, na.rm = TRUE),
+      FakeDate = lubridate::ymd(year, truncated = 2L)
+    ),
+    by = c("year", "quarter")
+  ][order(year, quarter)]
+
+sdudAggQtrYear
+```
+
+#### Examine total row counts and summed number of prescriptions by year and state.
+
+```{r sdudAggStateYear}
+sdudAggStateYear <-
+  sdudFinal[
+    i  = ,
+    j  = .(
+      RowCount = .N,
+      TotalRx  = sum(numberrx, na.rm = TRUE),
+      FakeDate = lubridate::ymd(year, truncated = 2L)
+    ),
+    by = c("year", "state")
+  ]
+
+sdudAggStateYear
+```
+
+#### Examine total row counts and summed number of prescriptions by year, state, and quarter.
+
+```{r sdudAggQtrStateYear}
+sdudAggQtrStateYear <-
+  sdudFinal[
+    i  = ,
+    j  = .(
+      RowCount = .N,
+      TotalRx  = sum(numberrx, na.rm = TRUE),
+      FakeDate = lubridate::ymd(year, truncated = 2L)
+    ),
+    by = c("quarter", "year", "state")
+  ]
+
+sdudAggQtrStateYear
+```
+
+### Create plots
+
+#### Plot 1: Record count by year.
+
+```{r plotYearRecordCount, fig.width = 20, fig.height = 12}
+sdudAggYear %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = RowCount,
+        fill = FakeDate
+      ),
+      color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_c() + 
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Records") +
+    labs(caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html") +
+    ggtitle("Number of Records by Year - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black"),
+      legend.position = "none"
+    )
+```
+
+#### Plot 2: Summed number of prescriptions by year.
+
+```{r plotYearRxSum, fig.width = 20, fig.height = 12}
+sdudAggYear %>%
+  ggplot() +
+  geom_col(
+    aes(
+      x    = FakeDate,
+      y    = TotalRx,
+      fill = FakeDate
+    ),
+    color = "black"
+  ) +
+  scale_x_date(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    expand      = c(.01, .01)
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_viridis_c() + 
+  theme_ipsum_rc(grid = "XY") +
+  xlab("Year") +
+  ylab("Number of Prescriptions (sum)") +
+  labs(caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html") +
+  ggtitle("Summed Number of Prescriptions by Year - 2000 to 2020") +
+  theme(
+    axis.title.x    = element_text(color = "black"),
+    axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5),
+    axis.title.y    = element_text(color = "black"),
+    axis.text.y     = element_text(color = "black"),
+    legend.position = "none"
+  )
+```
+
+#### Plot 3: Record counts by quarter and year.
+
+```{r plotQtrYearRecordCount, fig.width = 20, fig.height = 12}
+sdudAggQtrYear %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = RowCount,
+        fill = factor(quarter)
+      ),
+    color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_d() + 
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Records") +
+    labs(
+      caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html",
+      fill = "Quarter"
+    ) +
+    ggtitle("Number of Records by Quarter and Year - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black")
+    )
+```
+
+#### Plot 4: Summed number of prescriptions by quarter and year.
+
+```{r plotQtrYearRxSum, fig.width = 20, fig.height = 12}
+sdudAggQtrYear %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = TotalRx,
+        fill = factor(quarter)
+      ),
+    color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_d() + 
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Prescriptions (sum)") +
+    labs(
+      caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html",
+      fill = "Quarter"
+    ) +
+    ggtitle("Summed Number of Prescriptions by Quarter and Year - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black")
+    )
+```
+
+#### Plot 5: Number of records by state and year.
+
+```{r plotStateYearRecordCount, fig.width = 20, fig.height = 12}
+sdudAggStateYear %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = RowCount,
+        fill = FakeDate
+      ),
+    color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_c() + 
+    facet_wrap(~state) +
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Records") +
+    labs(caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html") +
+    ggtitle("Number of Records by State and Year - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5, size = 8),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black"),
+      legend.position = "none"
+    )
+```
+
+#### Plot 6: Summed number of prescriptions by state and year.
+
+```{r plotStateYearRxSum, fig.width = 20, fig.height = 12}
+sdudAggStateYear %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = TotalRx,
+        fill = FakeDate
+      ),
+    color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_c() + 
+    facet_wrap(~state) +
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Prescriptions (sum)") +
+    labs(caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html") +
+    ggtitle("Summed Number of Prescriptions by State and Year - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5, size = 8),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black"),
+      legend.position = "none"
+    ) 
+```
+
+#### Plot 7: Remove outliers and re-plot.
+
+```{r plotStateYearRxSumRmOutliers, fig.width = 20, fig.height = 12}
+sdudAggStateYear %>%
+  filter(
+    !(
+      (state == "WA" & year == 2006) |
+        (state == "SD" & year == 2007) |
+        (state == "TN") & year %in% c(2003:2006)
+    )
+  ) %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = TotalRx,
+        fill = FakeDate
+      ),
+    color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_c() + 
+    facet_wrap(~state) +
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Prescriptions (sum)") +
+    labs(caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html \n Outliers identified (WA                     2006, SD 2007, TN 2003 - 2006)") +
+    ggtitle("Summed Number of Prescriptions by State and Year with Outliers Removed - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5, size = 8),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black"),
+      legend.position = "none"
+    )
+```
+
+#### Plot 8: Number of records by quarter, state, and year.
+
+```{r plotQtrStateYearRecordCount, fig.width = 20, fig.height = 12}
+sdudAggQtrStateYear %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = RowCount,
+        fill = factor(quarter)
+      ),
+      color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_d() + 
+    facet_wrap(~state) +
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Records") +
+    labs(
+      caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html",
+      fill = "Quarter"
+    ) +
+    ggtitle("Number of Records by Quarter, State, and Year - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5, size = 8),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black")
+    )
+```
+
+#### Plot 9: Summed number of prescriptions by quarter, state, and year.
+
+```{r plotQtrStateYearRxSum, fig.width = 20, fig.height = 12}
+sdudAggQtrStateYear %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = TotalRx,
+        fill = factor(quarter)
+      ),
+      color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_d() + 
+    facet_wrap(~state) +
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Prescriptions (sum)") +
+    labs(
+      caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html",
+      fill = "Quarter"
+    ) +
+    ggtitle("Summed Number of Prescriptions by Quarter, State, and Year - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5, size = 8),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black")
+    )
+```
+
+#### Plot 10: Remove outliers and re-plot.
+
+```{r plotQtrStateYearRxSumRmOutliers, fig.width = 20, fig.height = 12}
+sdudAggQtrStateYear %>%
+  filter(
+    !(
+      (state == "WA" & year == 2006 & quarter == 3) |
+        (state == "SD" & year == 2007 & quarter == 3) |
+        (state == "TN") & year %in% c(2003:2006)
+    )
+  ) %>%
+  ggplot() +
+    geom_col(
+      aes(
+        x    = FakeDate,
+        y    = TotalRx,
+        fill = factor(quarter)
+      ),
+      color = "black"
+    ) +
+    scale_x_date(
+      date_breaks = "1 year",
+      date_labels = "%Y",
+      expand      = c(.01, .01)
+    ) +
+    scale_y_continuous(labels = scales::comma) +
+    scale_fill_viridis_d() + 
+    facet_wrap(~state) +
+    theme_ipsum_rc(grid = "XY") +
+    xlab("Year") +
+    ylab("Number of Prescriptions (sum)") +
+    labs(
+      caption = "Source: https://www.medicaid.gov/medicaid/prescription-drugs/state-drug-utilization-data/index.html \n Outliers identified (WA                    2006 Q3, SD 2007 Q3, TN 2003-2006)",
+      fill = "Quarter"
+    ) +
+    ggtitle("Summed Number of Prescriptions by Quarter, State, and Year with Outliers Removed - 2000 to 2020") +
+    theme(
+      axis.title.x    = element_text(color = "black"),
+      axis.text.x     = element_text(color = "black", angle = 90, vjust = 0.5, size = 8),
+      axis.title.y    = element_text(color = "black"),
+      axis.text.y     = element_text(color = "black")
+    ) 
+```
