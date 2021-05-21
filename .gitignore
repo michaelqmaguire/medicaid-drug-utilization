@@ -49,6 +49,7 @@ data/clean/redbook2019.csv
 data/clean/01_sdud-redbook-joined-on-ndc.csv
 data/clean/02_sdud-redbook-dropped-records.csv
 data/clean/03_sdud-redbook-final.csv
+data/clean/04_sdud-redbook-ndc-info.csv
 
 # Scratch script
 
@@ -57,4 +58,3 @@ data/clean/03_sdud-redbook-final.csv
 # Prior Extracts
 
 data/clean/*.zip
-
