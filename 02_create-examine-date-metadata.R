@@ -44,16 +44,16 @@ urls <-
     "https://data.medicaid.gov/api/views/66gr-qxnr/rows.csv?accessType=DOWNLOAD", # 2003
     "https://data.medicaid.gov/api/views/5jcx-2xey/rows.csv?accessType=DOWNLOAD", # 2002
     "https://data.medicaid.gov/api/views/t5ct-xf3k/rows.csv?accessType=DOWNLOAD", # 2001
-    "https://data.medicaid.gov/api/views/78qv-c4cn/rows.csv?accessType=DOWNLOAD", # 2000
-    "https://data.medicaid.gov/api/views/vhg8-v7wa/rows.csv?accessType=DOWNLOAD", # 1999
-    "https://data.medicaid.gov/api/views/ykva-ug36/rows.csv?accessType=DOWNLOAD", # 1998
-    "https://data.medicaid.gov/api/views/c7wf-ku3w/rows.csv?accessType=DOWNLOAD", # 1997
-    "https://data.medicaid.gov/api/views/jqjw-uby8/rows.csv?accessType=DOWNLOAD", # 1996
-    "https://data.medicaid.gov/api/views/v83u-wwk3/rows.csv?accessType=DOWNLOAD", # 1995
-    "https://data.medicaid.gov/api/views/8uti-96dw/rows.csv?accessType=DOWNLOAD", # 1994
-    "https://data.medicaid.gov/api/views/iu8s-z84j/rows.csv?accessType=DOWNLOAD", # 1993
-    "https://data.medicaid.gov/api/views/agzs-hwsn/rows.csv?accessType=DOWNLOAD", # 1992
-    "https://data.medicaid.gov/api/views/q7kf-kjqz/rows.csv?accessType=DOWNLOAD"  # 1991
+    "https://data.medicaid.gov/api/views/78qv-c4cn/rows.csv?accessType=DOWNLOAD" # 2000
+    # "https://data.medicaid.gov/api/views/vhg8-v7wa/rows.csv?accessType=DOWNLOAD", # 1999
+    # "https://data.medicaid.gov/api/views/ykva-ug36/rows.csv?accessType=DOWNLOAD", # 1998
+    # "https://data.medicaid.gov/api/views/c7wf-ku3w/rows.csv?accessType=DOWNLOAD", # 1997
+    # "https://data.medicaid.gov/api/views/jqjw-uby8/rows.csv?accessType=DOWNLOAD", # 1996
+    # "https://data.medicaid.gov/api/views/v83u-wwk3/rows.csv?accessType=DOWNLOAD", # 1995
+    # "https://data.medicaid.gov/api/views/8uti-96dw/rows.csv?accessType=DOWNLOAD", # 1994
+    # "https://data.medicaid.gov/api/views/iu8s-z84j/rows.csv?accessType=DOWNLOAD", # 1993
+    # "https://data.medicaid.gov/api/views/agzs-hwsn/rows.csv?accessType=DOWNLOAD", # 1992
+    # "https://data.medicaid.gov/api/views/q7kf-kjqz/rows.csv?accessType=DOWNLOAD"  # 1991
   )
 
 ## Read in metadata date file if it exists.
@@ -166,7 +166,8 @@ if (exists("existing_url_info") && summarized_differences$n > 0) {
 message("| ------------------------------------------------------------------------------ |")
 message("| Differences exist between the previous metadata file and the current metadata. |")
 message("| Results from the previous metadata file will be overwritten, and differences   |")
-message("| will be documented in the metadata archive directory.                          |")
+message("| will be documented in the metadata archive directory. A new extract needs to   |")
+message("| pulled. Please proceed running the rest of the scripts in the project.         |")
 message("| ------------------------------------------------------------------------------ |")
 # Overwrite file if there are differences.
 write_csv(updated_and_created, file = "./data/clean/url-metadata-info.csv")
