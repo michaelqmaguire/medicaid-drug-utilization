@@ -1,4 +1,4 @@
-# Medicaid State Drug Utilization, 1991 to 2020
+# Medicaid State Drug Utilization, 2000-2020
 
 This project seeks to normalize the state drug utilization data that is publicly available on the Centers for Medicare & Medicaid Services' website (https://data.medicaid.gov/)
 
