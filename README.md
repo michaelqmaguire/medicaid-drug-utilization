@@ -1,6 +1,6 @@
 # Medicaid State Drug Utilization, 1991 to 2020
 
-This project seeks to normalize the state drug utilization data that is publicly available on the Department of Health and Human Service's website (https://data.medicaid.gov/)
+This project seeks to normalize the state drug utilization data that is publicly available on the Centers for Medicare & Medicaid Services' website (https://data.medicaid.gov/)
 
 # Data Sources
 
@@ -65,7 +65,7 @@ library(tidylog)
 - **08_create-rmarkdown-report.Rmd**
   - This .Rmd document is largely adapted from **07_make-plots.R**. Its purpose is to create the **08_create_rmarkdown_report.md** document, which provides a friendly interface to viewing the plots on GitHub.
 
-- **08_create-rmarkdown-report.Rmd**
+- **08_create-rmarkdown-report.md**
   - This document provides a friendly interface to the code and plots in the dataset. It is what I will send you if you need to get a general overview of what is contained in the      dataset.
 
 3. Disclaimer
